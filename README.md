@@ -99,9 +99,9 @@ A **role selector toggle** in the UI controls which experience is shown. No logi
 > **Notes:** A `GET /v1/badges` endpoint was added as a stack validation check (frontend → API → DB), displaying the 5 seeded badges on the Traveler page. This will be removed or replaced once real Phase 3 features are built.
 
 ### Phase 2 — Merchant Core (CRUD)
-- [ ] Create / edit / delete a cart listing
-- [ ] Set location via pin drop on the Misthaven map
-- [ ] Set hours and open/closed status
+- [x] Create / edit / delete a cart listing
+- [x] Set location via pin drop on the Misthaven map
+- [x] Set hours and open/closed status
 
 ### Phase 3 — Traveler Core (Browse)
 - [ ] Map view showing all active cart pins

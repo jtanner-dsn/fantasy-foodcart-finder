@@ -50,6 +50,18 @@ func main() {
 	r.Get("/health", handlers.Health)
 	if pool != nil {
 		r.Get("/v1/badges", handlers.Badges(pool))
+
+		// Carts
+		r.Get("/v1/carts", handlers.ListCarts(pool))
+		r.Post("/v1/carts", handlers.CreateCart(pool))
+		r.Get("/v1/carts/{id}", handlers.GetCart(pool))
+		r.Put("/v1/carts/{id}", handlers.UpdateCart(pool))
+		r.Delete("/v1/carts/{id}", handlers.DeleteCart(pool))
+
+		// Menu items (nested under cart)
+		r.Post("/v1/carts/{id}/menu-items", handlers.CreateMenuItem(pool))
+		r.Put("/v1/carts/{id}/menu-items/{itemId}", handlers.UpdateMenuItem(pool))
+		r.Delete("/v1/carts/{id}/menu-items/{itemId}", handlers.DeleteMenuItem(pool))
 	}
 
 	addr := ":" + port
