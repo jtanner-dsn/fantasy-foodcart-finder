@@ -44,6 +44,23 @@ export interface MenuItemInput {
   price: number;
 }
 
+export interface CartFilter {
+  district?: string;
+  cuisine?: string;
+  open?: boolean;
+}
+
+export async function browseAllCarts(filter: CartFilter = {}): Promise<Cart[]> {
+  const params = new URLSearchParams();
+  if (filter.district) params.set('district', filter.district);
+  if (filter.cuisine) params.set('cuisine', filter.cuisine);
+  if (filter.open) params.set('open', 'true');
+  const qs = params.toString();
+  const res = await fetch(`${API_BASE}/v1/carts/browse${qs ? `?${qs}` : ''}`);
+  if (!res.ok) throw new Error('Failed to fetch carts');
+  return res.json();
+}
+
 export async function listMyCarts(operatorId: string): Promise<Cart[]> {
   const res = await fetch(`${API_BASE}/v1/carts?operator_id=${encodeURIComponent(operatorId)}`);
   if (!res.ok) throw new Error('Failed to fetch carts');

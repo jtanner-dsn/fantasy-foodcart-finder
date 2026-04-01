@@ -54,6 +54,7 @@ func main() {
 		// Carts
 		r.Get("/v1/carts", handlers.ListCarts(pool))
 		r.Post("/v1/carts", handlers.CreateCart(pool))
+		r.Get("/v1/carts/browse", handlers.BrowseCarts(pool))
 		r.Get("/v1/carts/{id}", handlers.GetCart(pool))
 		r.Put("/v1/carts/{id}", handlers.UpdateCart(pool))
 		r.Delete("/v1/carts/{id}", handlers.DeleteCart(pool))

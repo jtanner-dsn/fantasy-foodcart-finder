@@ -103,10 +103,13 @@ A **role selector toggle** in the UI controls which experience is shown. No logi
 - [x] Set location via pin drop on the Misthaven map
 - [x] Set hours and open/closed status
 
-### Phase 3 — Traveler Core (Browse)
-- [ ] Map view showing all active cart pins
-- [ ] Cart detail page (menu, hours, district/landmark description)
-- [ ] Cart listing/search outside the map
+### Phase 3 — Traveler Core (Browse) ✅ Done
+- [x] Map view showing all cart pins (`CartMap` component — amber = open, gray = closed)
+- [x] Cart detail page (`/traveler/[id]`) — name, cuisine, open status, hours, district/landmark, bill of fare, embedded location map
+- [x] District filter + open-now toggle on the traveler browse page
+- [x] `GET /v1/carts/browse` API endpoint (no auth required; optional `district`, `cuisine`, `open` query params)
+
+> **Notes:** The badges stack-check on the old Traveler page was removed and replaced with the real browse UI. The `MapPicker` "Map container is already initialized" bug (React strict mode double-mount) was fixed with a `cancelled` flag in the Leaflet init effect.
 
 ### Phase 4 — Ratings & Reviews
 - [ ] Star rating (1–5) per cart

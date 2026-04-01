@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -301,6 +302,62 @@ func DeleteCart(pool *pgxpool.Pool) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+// BrowseCarts handles GET /v1/carts/browse — returns all carts, no auth required.
+// Optional query params: district=, cuisine= (partial match), open=true
+func BrowseCarts(pool *pgxpool.Pool) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		district := strings.TrimSpace(r.URL.Query().Get("district"))
+		cuisine := strings.TrimSpace(r.URL.Query().Get("cuisine"))
+		openOnly := r.URL.Query().Get("open") == "true"
+
+		query := `SELECT id, name, description, cuisine_type, operator_id, is_open,
+		                 COALESCE(hours_text,''), location_x, location_y,
+		                 COALESCE(district,''), COALESCE(landmark_desc,''),
+		                 created_at, updated_at
+		          FROM carts WHERE 1=1`
+		args := []any{}
+		n := 1
+
+		if district != "" {
+			query += fmt.Sprintf(" AND district = $%d", n)
+			args = append(args, district)
+			n++
+		}
+		if cuisine != "" {
+			query += fmt.Sprintf(" AND cuisine_type ILIKE $%d", n)
+			args = append(args, "%"+cuisine+"%")
+			n++
+		}
+		if openOnly {
+			query += " AND is_open = true"
+		}
+		query += " ORDER BY name"
+
+		rows, err := pool.Query(r.Context(), query, args...)
+		if err != nil {
+			writeError(w, http.StatusInternalServerError, "database error")
+			return
+		}
+		defer rows.Close()
+
+		carts := []Cart{}
+		for rows.Next() {
+			var c Cart
+			if err := rows.Scan(
+				&c.ID, &c.Name, &c.Description, &c.CuisineType, &c.OperatorID,
+				&c.IsOpen, &c.HoursText, &c.LocationX, &c.LocationY,
+				&c.District, &c.LandmarkDesc, &c.CreatedAt, &c.UpdatedAt,
+			); err != nil {
+				writeError(w, http.StatusInternalServerError, "scan error")
+				return
+			}
+			carts = append(carts, c)
+		}
+
+		writeJSON(w, http.StatusOK, carts)
 	}
 }
 
