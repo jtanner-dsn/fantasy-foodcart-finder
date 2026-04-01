@@ -21,8 +21,11 @@ export default function MapPicker({ value, onChange }: MapPickerProps) {
     if (typeof window === 'undefined' || !containerRef.current) return;
     if (mapRef.current) return; // already initialised
 
+    let cancelled = false;
+
     // Dynamic import so Leaflet only runs client-side
     import('leaflet').then((L) => {
+      if (cancelled || !containerRef.current) return;
       // Override default icon paths (Next.js doesn't serve them from the default location)
       const DefaultIcon = L.icon({
         iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
@@ -66,6 +69,7 @@ export default function MapPicker({ value, onChange }: MapPickerProps) {
     });
 
     return () => {
+      cancelled = true;
       mapRef.current?.remove();
       mapRef.current = null;
       markerRef.current = null;
