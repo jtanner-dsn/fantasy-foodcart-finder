@@ -1,0 +1,60 @@
+package main
+
+import (
+	"context"
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/go-chi/chi/v5"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
+
+	"github.com/jtanner/foodtruck-finder/api/internal/db"
+	"github.com/jtanner/foodtruck-finder/api/internal/handlers"
+	"github.com/jtanner/foodtruck-finder/api/internal/middleware"
+)
+
+func main() {
+	// Load .env file; ignore error if it doesn't exist (e.g. in production).
+	_ = godotenv.Load()
+
+	// Resolve config from environment with sensible defaults.
+	connStr := os.Getenv("DATABASE_URL")
+	if connStr == "" {
+		connStr = "postgres://postgres:postgres@localhost:5432/foodtruck_finder?sslmode=disable"
+	}
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	// Connect to Postgres.
+	ctx := context.Background()
+	pool, err := db.Connect(ctx, connStr)
+	if err != nil {
+		log.Printf("warning: could not connect to database: %v", err)
+		log.Println("continuing without database — /health will still serve")
+	} else {
+		defer pool.Close()
+		log.Println("connected to database")
+	}
+
+	// Build router.
+	r := chi.NewRouter()
+	r.Use(chimiddleware.Logger)
+	r.Use(chimiddleware.Recoverer)
+	r.Use(middleware.CORS)
+
+	r.Get("/health", handlers.Health)
+	if pool != nil {
+		r.Get("/v1/badges", handlers.Badges(pool))
+	}
+
+	addr := ":" + port
+	log.Printf("misthaven-api listening on %s", addr)
+	if err := http.ListenAndServe(addr, r); err != nil {
+		log.Fatalf("server error: %v", err)
+	}
+}
