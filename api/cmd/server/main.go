@@ -67,6 +67,10 @@ func main() {
 		// Ratings (nested under cart)
 		r.Get("/v1/carts/{id}/ratings", handlers.GetRatings(pool))
 		r.Post("/v1/carts/{id}/ratings", handlers.UpsertRating(pool))
+
+		// Passport & leaderboard
+		r.Get("/v1/passport", handlers.GetPassport(pool))
+		r.Get("/v1/leaderboard", handlers.GetLeaderboard(pool))
 	}
 
 	addr := ":" + port

@@ -83,6 +83,13 @@ func UpsertRating(pool *pgxpool.Pool) http.HandlerFunc {
 			return
 		}
 
+		// Issue passport stamp (idempotent — unique constraint ignores duplicates)
+		_, _ = pool.Exec(r.Context(),
+			`INSERT INTO passport_stamps (traveler_id, cart_id) VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+			req.TravelerID, cartID)
+		// Evaluate and award any newly earned badges
+		awardBadges(r.Context(), pool, req.TravelerID)
+
 		writeJSON(w, http.StatusOK, rt)
 	}
 }

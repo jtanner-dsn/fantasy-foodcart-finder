@@ -184,6 +184,48 @@ export async function getCartRatings(cartId: string, travelerId?: string): Promi
   return res.json();
 }
 
+export interface PassportStamp {
+  id: string;
+  cart_id: string;
+  cart_name: string;
+  cart_cuisine: string;
+  district: string;
+  created_at: string;
+}
+
+export interface EarnedBadge {
+  id: string;
+  name: string;
+  description: string;
+  earned_at: string;
+}
+
+export interface PassportResponse {
+  stamp_count: number;
+  stamps: PassportStamp[];
+  badges: EarnedBadge[];
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  traveler_id: string;
+  stamp_count: number;
+}
+
+export async function getPassport(travelerId: string): Promise<PassportResponse> {
+  const res = await fetch(
+    `${API_BASE}/v1/passport?traveler_id=${encodeURIComponent(travelerId)}`,
+  );
+  if (!res.ok) throw new Error('Failed to fetch passport');
+  return res.json();
+}
+
+export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
+  const res = await fetch(`${API_BASE}/v1/leaderboard`);
+  if (!res.ok) throw new Error('Failed to fetch leaderboard');
+  return res.json();
+}
+
 export async function upsertRating(
   cartId: string,
   travelerId: string,
