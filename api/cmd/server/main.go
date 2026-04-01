@@ -63,6 +63,10 @@ func main() {
 		r.Post("/v1/carts/{id}/menu-items", handlers.CreateMenuItem(pool))
 		r.Put("/v1/carts/{id}/menu-items/{itemId}", handlers.UpdateMenuItem(pool))
 		r.Delete("/v1/carts/{id}/menu-items/{itemId}", handlers.DeleteMenuItem(pool))
+
+		// Ratings (nested under cart)
+		r.Get("/v1/carts/{id}/ratings", handlers.GetRatings(pool))
+		r.Post("/v1/carts/{id}/ratings", handlers.UpsertRating(pool))
 	}
 
 	addr := ":" + port
