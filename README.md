@@ -91,10 +91,12 @@ A **role selector toggle** in the UI controls which experience is shown. No logi
 ## Feature Phases
 
 ### Phase 1 — Foundation
-- [ ] Project scaffolding (Next.js + Go + Postgres)
-- [ ] Database schema and migrations
-- [ ] Role selector UI
-- [ ] Basic routing structure
+- [x] Project scaffolding (Next.js + Go + Postgres)
+- [x] Database schema and migrations
+- [x] Role selector UI
+- [x] Basic routing structure
+
+> **Notes:** A `GET /v1/badges` endpoint was added as a stack validation check (frontend → API → DB), displaying the 5 seeded badges on the Traveler page. This will be removed or replaced once real Phase 3 features are built.
 
 ### Phase 2 — Merchant Core (CRUD)
 - [ ] Create / edit / delete a cart listing
