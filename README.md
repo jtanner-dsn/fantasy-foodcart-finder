@@ -111,10 +111,17 @@ A **role selector toggle** in the UI controls which experience is shown. No logi
 
 > **Notes:** The badges stack-check on the old Traveler page was removed and replaced with the real browse UI. The `MapPicker` "Map container is already initialized" bug (React strict mode double-mount) was fixed with a `cancelled` flag in the Leaflet init effect.
 
-### Phase 4 — Ratings & Reviews
-- [ ] Star rating (1–5) per cart
-- [ ] Short text review
-- [ ] Aggregate rating displayed on cart cards and detail pages
+### Phase 4 — Ratings & Reviews ✅ Done
+- [x] Star rating (1–5) per cart — upsert via `POST /v1/carts/{id}/ratings`
+- [x] Optional text review stored in `review_text` column
+- [x] Aggregate avg + count returned by `GET /v1/carts/{id}/ratings`
+- [x] Aggregate `avg_stars` / `rating_count` embedded in all cart list/browse/detail responses
+- [x] Star picker + review textarea on cart detail page (travelers only — merchants blocked from rating own cart)
+- [x] Pre-fills existing rating so travelers can update it
+- [x] Star summary shown in traveler browse sidebar for rated carts
+- [x] 7 Playwright tests covering submit, update, merchant block, and browse display
+
+> **Notes:** `review_text` was already in the schema from the start. No migration needed. The Go `UpdateCart` / `CreateCart` RETURNING paths intentionally omit `avg_stars`/`rating_count` (always 0/null at write time) — the merchant dashboard doesn't need them.
 
 ### Phase 5 — The Passport (Gamification)
 - [ ] Stamp earned per unique cart rated

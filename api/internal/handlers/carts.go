@@ -27,6 +27,8 @@ type Cart struct {
 	LandmarkDesc string     `json:"landmark_desc"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
+	AvgStars     *float64   `json:"avg_stars"`
+	RatingCount  int        `json:"rating_count"`
 	MenuItems    []MenuItem `json:"menu_items,omitempty"`
 }
 
@@ -118,8 +120,10 @@ func ListCarts(pool *pgxpool.Pool) http.HandlerFunc {
 			`SELECT id, name, description, cuisine_type, operator_id, is_open,
 			        COALESCE(hours_text,''), location_x, location_y,
 			        COALESCE(district,''), COALESCE(landmark_desc,''),
-			        created_at, updated_at
-			 FROM carts WHERE operator_id = $1 ORDER BY created_at DESC`,
+			        created_at, updated_at,
+			        (SELECT ROUND(AVG(stars)::numeric,1) FROM ratings WHERE cart_id=c.id),
+			        (SELECT COUNT(*) FROM ratings WHERE cart_id=c.id)
+			 FROM carts c WHERE operator_id = $1 ORDER BY created_at DESC`,
 			operatorID)
 		if err != nil {
 			writeError(w, http.StatusInternalServerError, "database error")
@@ -134,6 +138,7 @@ func ListCarts(pool *pgxpool.Pool) http.HandlerFunc {
 				&c.ID, &c.Name, &c.Description, &c.CuisineType, &c.OperatorID,
 				&c.IsOpen, &c.HoursText, &c.LocationX, &c.LocationY,
 				&c.District, &c.LandmarkDesc, &c.CreatedAt, &c.UpdatedAt,
+				&c.AvgStars, &c.RatingCount,
 			); err != nil {
 				writeError(w, http.StatusInternalServerError, "scan error")
 				return
@@ -155,13 +160,16 @@ func GetCart(pool *pgxpool.Pool) http.HandlerFunc {
 			`SELECT id, name, description, cuisine_type, operator_id, is_open,
 			        COALESCE(hours_text,''), location_x, location_y,
 			        COALESCE(district,''), COALESCE(landmark_desc,''),
-			        created_at, updated_at
-			 FROM carts WHERE id = $1`,
+			        created_at, updated_at,
+			        (SELECT ROUND(AVG(stars)::numeric,1) FROM ratings WHERE cart_id=c.id),
+			        (SELECT COUNT(*) FROM ratings WHERE cart_id=c.id)
+			 FROM carts c WHERE id = $1`,
 			id,
 		).Scan(
 			&c.ID, &c.Name, &c.Description, &c.CuisineType, &c.OperatorID,
 			&c.IsOpen, &c.HoursText, &c.LocationX, &c.LocationY,
 			&c.District, &c.LandmarkDesc, &c.CreatedAt, &c.UpdatedAt,
+			&c.AvgStars, &c.RatingCount,
 		)
 		if err != nil {
 			writeError(w, http.StatusNotFound, "cart not found")
@@ -313,11 +321,13 @@ func BrowseCarts(pool *pgxpool.Pool) http.HandlerFunc {
 		cuisine := strings.TrimSpace(r.URL.Query().Get("cuisine"))
 		openOnly := r.URL.Query().Get("open") == "true"
 
-		query := `SELECT id, name, description, cuisine_type, operator_id, is_open,
-		                 COALESCE(hours_text,''), location_x, location_y,
-		                 COALESCE(district,''), COALESCE(landmark_desc,''),
-		                 created_at, updated_at
-		          FROM carts WHERE 1=1`
+		query := `SELECT c.id, c.name, c.description, c.cuisine_type, c.operator_id, c.is_open,
+		                 COALESCE(c.hours_text,''), c.location_x, c.location_y,
+		                 COALESCE(c.district,''), COALESCE(c.landmark_desc,''),
+		                 c.created_at, c.updated_at,
+		                 (SELECT ROUND(AVG(stars)::numeric,1) FROM ratings WHERE cart_id=c.id),
+		                 (SELECT COUNT(*) FROM ratings WHERE cart_id=c.id)
+		          FROM carts c WHERE 1=1`
 		args := []any{}
 		n := 1
 
@@ -350,6 +360,7 @@ func BrowseCarts(pool *pgxpool.Pool) http.HandlerFunc {
 				&c.ID, &c.Name, &c.Description, &c.CuisineType, &c.OperatorID,
 				&c.IsOpen, &c.HoursText, &c.LocationX, &c.LocationY,
 				&c.District, &c.LandmarkDesc, &c.CreatedAt, &c.UpdatedAt,
+				&c.AvgStars, &c.RatingCount,
 			); err != nil {
 				writeError(w, http.StatusInternalServerError, "scan error")
 				return

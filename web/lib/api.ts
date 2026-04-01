@@ -22,7 +22,25 @@ export interface Cart {
   landmark_desc: string;
   created_at: string;
   updated_at: string;
+  avg_stars: number | null;
+  rating_count: number;
   menu_items?: MenuItem[];
+}
+
+export interface Rating {
+  id: string;
+  cart_id: string;
+  traveler_id: string;
+  stars: number;
+  review_text: string | null;
+  created_at: string;
+}
+
+export interface RatingsResponse {
+  avg_stars: number | null;
+  count: number;
+  ratings: Rating[];
+  my_rating: Rating | null;
 }
 
 export interface CartInput {
@@ -155,4 +173,31 @@ export async function deleteMenuItem(
     { method: 'DELETE' },
   );
   if (!res.ok) throw new Error('Failed to delete menu item');
+}
+
+export async function getCartRatings(cartId: string, travelerId?: string): Promise<RatingsResponse> {
+  const params = new URLSearchParams();
+  if (travelerId) params.set('traveler_id', travelerId);
+  const qs = params.toString();
+  const res = await fetch(`${API_BASE}/v1/carts/${cartId}/ratings${qs ? `?${qs}` : ''}`);
+  if (!res.ok) throw new Error('Failed to fetch ratings');
+  return res.json();
+}
+
+export async function upsertRating(
+  cartId: string,
+  travelerId: string,
+  stars: number,
+  reviewText: string,
+): Promise<Rating> {
+  const res = await fetch(`${API_BASE}/v1/carts/${cartId}/ratings`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ traveler_id: travelerId, stars, review_text: reviewText || null }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Failed to save rating' }));
+    throw new Error(err.error ?? 'Failed to save rating');
+  }
+  return res.json();
 }

@@ -136,6 +136,13 @@ export default function TravelerPage() {
                   {cart.district && (
                     <p className="text-xs text-stone-500 mt-0.5">{cart.district}</p>
                   )}
+                  {cart.rating_count > 0 && (
+                    <p className="text-xs text-amber-400 mt-0.5">
+                      {'★'.repeat(Math.round(cart.avg_stars ?? 0))}
+                      {'☆'.repeat(5 - Math.round(cart.avg_stars ?? 0))}{' '}
+                      <span className="text-stone-500">{cart.avg_stars?.toFixed(1)} ({cart.rating_count})</span>
+                    </p>
+                  )}
                 </button>
               </li>
             ))}
