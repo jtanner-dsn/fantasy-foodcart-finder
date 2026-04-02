@@ -123,16 +123,24 @@ A **role selector toggle** in the UI controls which experience is shown. No logi
 
 > **Notes:** `review_text` was already in the schema from the start. No migration needed. The Go `UpdateCart` / `CreateCart` RETURNING paths intentionally omit `avg_stars`/`rating_count` (always 0/null at write time) — the merchant dashboard doesn't need them.
 
-### Phase 5 — The Passport (Gamification)
-- [ ] Stamp earned per unique cart rated
-- [ ] Badge system (see Gamification section below)
-- [ ] Traveler passport page showing stamps and badges
-- [ ] City leaderboard (top 10 by stamp count)
+### Phase 5 — The Passport (Gamification) ✅ Done
+- [x] Stamp issued automatically when a traveler submits a rating (upserts skip duplicates)
+- [x] Badge system — 5 seeded badges: First Bite, Street Sage, Seasoned Wanderer, Flavor Pilgrim, and a district badge; awarded server-side on each stamp event
+- [x] `GET /v1/passport?traveler_id=` — returns stamp count, stamp list (with cart name/cuisine/district), and earned badges
+- [x] `GET /v1/leaderboard` — top 10 travelers by stamp count with rank and handle
+- [x] Passport page (`/traveler/passport`) — stamp counter, badge grid, visited-stalls list with links, city leaderboard
+- [x] "My Passport" nav link shown for travelers in the NavBar
+- [x] 7 Playwright tests covering stamp issuance, badge award, duplicate prevention, and leaderboard
 
-### Phase 6 — Polish
-- [ ] Fantasy-themed UI (fonts, color palette, iconography)
-- [ ] Mobile-responsive layout
-- [ ] Empty states, loading states, error handling
+> **Notes:** Stamps are derived from ratings — rating a cart issues a stamp if none exists for that traveler+cart pair (UNIQUE constraint). No separate stamp action required. The `/v1/badges` endpoint from Phase 1 is retained as it seeds the badge data used by the passport.
+
+### Phase 6 — Polish ✅ Done
+- [x] Fantasy fonts — Cinzel (headings/display) + Lora (body) via `next/font/google`; `font-display`, `page-title`, `section-header`, `card` utility classes
+- [x] Mobile-responsive layout — NavBar abbreviates on small screens; traveler browse stacks map above cart list on mobile (`md:` breakpoint); CartForm, merchant, and detail pages use responsive padding
+- [x] Animated shimmer skeleton loading states on all data-fetching pages (merchant, passport, cart detail, traveler browse)
+- [x] Empty states — merchant dashboard, passport badges/leaderboard, traveler browse (filter vs. no-data variants)
+- [x] Error states — card-styled error UI replacing bare red text across merchant, cart detail, and edit pages
+- [x] 16 Playwright tests covering fonts, loading, empty states, and mobile layout at 390px viewport
 
 ### Phase 7 — Deployment (Stretch)
 - [ ] Railway deployment of Go API + Postgres

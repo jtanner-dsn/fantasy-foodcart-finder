@@ -15,8 +15,8 @@ export default function NewCartPage() {
   };
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="text-3xl font-bold text-amber-400 mb-2">Register a New Cart</h1>
+    <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6 sm:py-12">
+      <h1 className="page-title mb-2">Register a New Cart</h1>
       <p className="text-stone-400 mb-8">
         Add your stall to the Misthaven guild ledger.
       </p>

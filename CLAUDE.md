@@ -149,11 +149,11 @@ Tests use `addInitScript` to pre-seed `localStorage` before navigation (avoids r
 |---|---|---|
 | 1 — Foundation | ✅ Done | Scaffolding, schema, role selector |
 | 2 — Merchant Core | ✅ Done | Cart CRUD, map pin, hours/status, menu items |
-| 3 — Traveler Browse | ⬜ Next | Map view of all carts, detail pages, search |
-| 4 — Ratings | ⬜ | Star rating + review per cart |
-| 5 — Passport | ⬜ | Stamps, badges, leaderboard |
-| 6 — Polish | ⬜ | Fantasy UI, mobile, empty/error states |
-| 7 — Deploy | ⬜ | Railway (Go+PG) + Vercel (Next.js) |
+| 3 — Traveler Browse | ✅ Done | Map view of all carts, detail pages, filters |
+| 4 — Ratings | ✅ Done | Star rating + review per cart |
+| 5 — Passport | ✅ Done | Stamps, badges, leaderboard |
+| 6 — Polish | ✅ Done | Fantasy fonts, mobile layout, loading/empty/error states |
+| 7 — Deploy | ⬜ Next | Railway (Go+PG) + Vercel (Next.js) |
 
 ### Misthaven city districts
 `Midheath`, `Peridozys`, `Beerside`, `Westheath`, `Aspenlane`, `Oakcorner`
