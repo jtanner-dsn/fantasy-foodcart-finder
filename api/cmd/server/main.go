@@ -30,6 +30,11 @@ func main() {
 		port = "8080"
 	}
 
+	allowedOrigin := os.Getenv("ALLOWED_ORIGIN")
+	if allowedOrigin == "" {
+		allowedOrigin = "http://localhost:3000"
+	}
+
 	// Connect to Postgres.
 	ctx := context.Background()
 	pool, err := db.Connect(ctx, connStr)
@@ -45,7 +50,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(chimiddleware.Logger)
 	r.Use(chimiddleware.Recoverer)
-	r.Use(middleware.CORS)
+	r.Use(middleware.CORS(allowedOrigin))
 
 	r.Get("/health", handlers.Health)
 	if pool != nil {
