@@ -12,28 +12,4 @@
     separated from the Save/Cancel buttons. The `+ Add Item` button is `type="button"`,
     so it never accidentally submits the form.
 
-- the map is so tiny. I would like it to be bigger on the screen.
-  - **IMPROVED (Phase 2):** `MapPicker` is now `h-72` (288 px). May still want to revisit
-    if it still feels cramped.
-
-
-## Next.js
-
-1 of 1 error
-Next.js (14.2.35) is outdated (learn more)
-
-Unhandled Runtime Error
-Error: Map container is already initialized.
-
-components/MapPicker.tsx (35:21) @ map
-```tsx
-    });
-    const map = L.map(containerRef.current!, {
-                  ^
-      crs: L.CRS.Simple,
-      minZoom: -2,
-      maxZoom: 2,
-```
-**FIXED (Phase 2):** `MapPicker.tsx` now guards with `if (mapRef.current) return` on
-mount and calls `mapRef.current?.remove()` in the effect cleanup, preventing double
-initialisation on React strict-mode double-invocation.
+- the map is so tiny when creating a listing. It needs to be about double the size.

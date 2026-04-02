@@ -42,12 +42,47 @@ function StarDisplay({ avg, count }: { avg: number | null; count: number }) {
   );
 }
 
+function CartDetailSkeleton() {
+  return (
+    <div className="mx-auto max-w-3xl px-4 py-8 space-y-8 sm:px-6 sm:py-10">
+      <div className="skeleton h-4 w-24" />
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <div className="skeleton h-8 w-64" />
+          <div className="skeleton h-6 w-16 rounded-full" />
+        </div>
+        <div className="skeleton h-4 w-32" />
+        <div className="skeleton h-4 w-48" />
+      </div>
+      <div className="card p-5 space-y-3">
+        <div className="skeleton h-5 w-24" />
+        <div className="skeleton h-4 w-40" />
+        <div className="skeleton h-4 w-36" />
+        <div className="skeleton h-48 w-full rounded-lg" />
+      </div>
+      <div className="space-y-3">
+        <div className="skeleton h-5 w-28" />
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="flex justify-between px-5 py-4 card">
+            <div className="space-y-1.5">
+              <div className="skeleton h-4 w-32" />
+              <div className="skeleton h-3 w-48" />
+            </div>
+            <div className="skeleton h-4 w-16" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function CartDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { sessionToken } = useRole();
 
   const [cart, setCart] = useState<Cart | null>(null);
+  const [loadingCart, setLoadingCart] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [ratingsData, setRatingsData] = useState<RatingsResponse | null>(null);
 
@@ -58,9 +93,11 @@ export default function CartDetailPage() {
 
   useEffect(() => {
     if (!id) return;
+    setLoadingCart(true);
     getCart(id)
       .then(setCart)
-      .catch(() => setError('Cart not found'));
+      .catch(() => setError('Cart not found'))
+      .finally(() => setLoadingCart(false));
   }, [id]);
 
   useEffect(() => {
@@ -92,43 +129,42 @@ export default function CartDetailPage() {
     }
   }
 
+  if (loadingCart) return <CartDetailSkeleton />;
+
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl px-6 py-12">
-        <p className="text-red-400">{error}</p>
-        <button onClick={() => router.back()} className="mt-4 text-amber-400 hover:underline text-sm">
-          ← Back to map
-        </button>
+      <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+        <div className="card px-6 py-10 text-center space-y-4">
+          <p className="font-display text-xl text-stone-300">Stall not found</p>
+          <p className="text-stone-500 text-sm">{error}</p>
+          <button onClick={() => router.back()} className="text-amber-400 hover:text-amber-300 text-sm underline transition-colors">
+            ← Back to map
+          </button>
+        </div>
       </div>
     );
   }
 
-  if (!cart) {
-    return (
-      <div className="mx-auto max-w-2xl px-6 py-12">
-        <p className="text-stone-500 text-sm">Loading…</p>
-      </div>
-    );
-  }
+  if (!cart) return null;
 
   const hasLocation = cart.location_x !== null && cart.location_y !== null;
   const isOwnCart = sessionToken !== '' && sessionToken === cart.operator_id;
   const canRate = sessionToken !== '' && !isOwnCart;
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10 space-y-8">
+    <div className="mx-auto max-w-3xl px-4 py-8 space-y-8 sm:px-6 sm:py-10 animate-fadeIn">
       {/* Back link */}
       <button
         onClick={() => router.push('/traveler')}
-        className="text-amber-400 hover:text-amber-300 text-sm"
+        className="text-amber-400 hover:text-amber-300 text-sm transition-colors"
       >
         ← Back to map
       </button>
 
       {/* Header */}
       <div className="space-y-1">
-        <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold text-amber-400">{cart.name}</h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="page-title">{cart.name}</h1>
           <span
             className={`text-sm px-2 py-0.5 rounded-full font-medium ${
               cart.is_open
@@ -148,13 +184,13 @@ export default function CartDetailPage() {
           </div>
         )}
         {cart.description && (
-          <p className="text-stone-300 mt-2">{cart.description}</p>
+          <p className="text-stone-300 mt-2 leading-relaxed">{cart.description}</p>
         )}
       </div>
 
       {/* Location info */}
-      <div className="rounded-xl bg-stone-800 border border-stone-700 p-5 space-y-2">
-        <h2 className="text-stone-200 font-semibold">Location</h2>
+      <div className="card p-5 space-y-2">
+        <h2 className="font-display text-stone-200 font-semibold">Location</h2>
         {cart.district && (
           <p className="text-stone-400 text-sm">
             <span className="text-stone-500">District:</span>{' '}
@@ -174,7 +210,7 @@ export default function CartDetailPage() {
           </p>
         )}
         {hasLocation && (
-          <div className="h-56 mt-3 rounded-lg overflow-hidden border border-stone-600">
+          <div className="h-52 mt-3 rounded-lg overflow-hidden border border-stone-600 sm:h-56">
             <CartMap carts={[cart]} selectedId={cart.id} onSelect={() => {}} />
           </div>
         )}
@@ -185,10 +221,10 @@ export default function CartDetailPage() {
 
       {/* Menu */}
       <div className="space-y-3">
-        <h2 className="text-stone-200 font-semibold">
+        <h2 className="font-display text-stone-200 font-semibold">
           Bill of Fare
           {cart.menu_items && cart.menu_items.length > 0 && (
-            <span className="ml-2 text-stone-500 font-normal text-sm">
+            <span className="ml-2 text-stone-500 font-normal text-sm font-body">
               ({cart.menu_items.length} item{cart.menu_items.length !== 1 ? 's' : ''})
             </span>
           )}
@@ -204,7 +240,7 @@ export default function CartDetailPage() {
           <ul className="divide-y divide-stone-700 rounded-xl border border-stone-700 overflow-hidden">
             {cart.menu_items.map((item) => (
               <li key={item.id} className="flex items-start justify-between gap-4 px-5 py-4 bg-stone-800">
-                <div className="space-y-0.5">
+                <div className="space-y-0.5 min-w-0">
                   <p className="text-stone-100 font-medium">{item.name}</p>
                   {item.description && (
                     <p className="text-stone-400 text-sm">{item.description}</p>
@@ -221,11 +257,10 @@ export default function CartDetailPage() {
 
       {/* Ratings */}
       <div className="space-y-4">
-        <h2 className="text-stone-200 font-semibold">Ratings &amp; Reviews</h2>
+        <h2 className="font-display text-stone-200 font-semibold">Ratings &amp; Reviews</h2>
 
-        {/* Rating form for travelers */}
         {canRate && (
-          <form onSubmit={handleSubmitRating} className="rounded-xl bg-stone-800 border border-stone-700 p-5 space-y-4">
+          <form onSubmit={handleSubmitRating} className="card p-5 space-y-4">
             <p className="text-stone-400 text-sm font-medium">
               {ratingsData?.my_rating ? 'Update your rating' : 'Leave a rating'}
             </p>
@@ -252,11 +287,10 @@ export default function CartDetailPage() {
           <p className="text-stone-500 text-sm italic">You operate this stall — travelers may rate it.</p>
         )}
 
-        {/* Reviews list */}
         {ratingsData && ratingsData.count > 0 && (
           <ul className="space-y-3">
             {ratingsData.ratings.map((rating) => (
-              <li key={rating.id} className="rounded-xl bg-stone-800 border border-stone-700 px-5 py-4 space-y-1">
+              <li key={rating.id} className="card px-5 py-4 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="text-amber-400">{'★'.repeat(rating.stars)}{'☆'.repeat(5 - rating.stars)}</span>
                   {rating.traveler_id === sessionToken && (
@@ -264,7 +298,7 @@ export default function CartDetailPage() {
                   )}
                 </div>
                 {rating.review_text && (
-                  <p className="text-stone-300 text-sm">{rating.review_text}</p>
+                  <p className="text-stone-300 text-sm leading-relaxed">{rating.review_text}</p>
                 )}
               </li>
             ))}

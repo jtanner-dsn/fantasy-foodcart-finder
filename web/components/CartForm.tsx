@@ -144,9 +144,7 @@ export default function CartForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* ── Core details ── */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400">
-          Cart Details
-        </h2>
+        <h2 className="section-header">Cart Details</h2>
 
         <div>
           <label className="block text-sm text-stone-300 mb-1">
@@ -189,9 +187,7 @@ export default function CartForm({
 
       {/* ── Hours & status ── */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400">
-          Hours & Status
-        </h2>
+        <h2 className="section-header">Hours &amp; Status</h2>
 
         <div className="flex items-center gap-3">
           <button
@@ -228,9 +224,7 @@ export default function CartForm({
 
       {/* ── Location ── */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400">
-          Location in Misthaven
-        </h2>
+        <h2 className="section-header">Location in Misthaven</h2>
 
         <div>
           <label className="block text-sm text-stone-300 mb-1">District</label>
@@ -275,9 +269,7 @@ export default function CartForm({
       {/* ── Menu items (edit mode only) ── */}
       {initial?.id && (
         <section className="space-y-4">
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-stone-400">
-            Menu Items
-          </h2>
+          <h2 className="section-header">Menu Items</h2>
 
           {menuItems.length > 0 && (
             <ul className="space-y-2">
@@ -310,7 +302,7 @@ export default function CartForm({
           {/* Add new item row */}
           <div className="rounded-lg border border-dashed border-stone-600 p-4 space-y-3">
             <p className="text-xs text-stone-400">Add a menu item</p>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <input
                 type="text"
                 value={newItemName}
@@ -325,7 +317,7 @@ export default function CartForm({
                 placeholder="Price (gp)"
                 min="0"
                 step="0.01"
-                className="w-28 rounded-lg bg-stone-800 border border-stone-600 px-3 py-2 text-stone-100 placeholder-stone-500 text-sm focus:outline-none focus:border-amber-400"
+                className="w-full rounded-lg bg-stone-800 border border-stone-600 px-3 py-2 text-stone-100 placeholder-stone-500 text-sm focus:outline-none focus:border-amber-400 sm:w-28"
               />
             </div>
             <input

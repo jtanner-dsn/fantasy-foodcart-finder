@@ -3,3 +3,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .skeleton {
+    @apply rounded bg-stone-700;
+    background-image: linear-gradient(
+      90deg,
+      theme('colors.stone.700') 0px,
+      theme('colors.stone.600') 200px,
+      theme('colors.stone.700') 400px
+    );
+    background-size: 800px 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+
+  .section-header {
+    @apply font-display text-sm font-semibold uppercase tracking-widest text-stone-400;
+  }
+
+  .page-title {
+    @apply font-display text-3xl font-bold text-amber-400;
+  }
+
+  .card {
+    @apply rounded-xl border border-stone-700 bg-stone-800;
+  }
+}
