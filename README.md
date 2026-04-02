@@ -147,6 +147,18 @@ A **role selector toggle** in the UI controls which experience is shown. No logi
 - [ ] Vercel deployment of Next.js frontend
 - [ ] Environment config for prod vs. local
 
+### Phase 8 — Real Auth (Post-Deployment Stretch)
+- [ ] `users` table with email + hashed password (bcrypt)
+- [ ] Register and login endpoints in Go (JWT issued on success)
+- [ ] Auth middleware protecting merchant routes
+- [ ] Login/register pages in Next.js
+- [ ] Swap localStorage session token for real JWT
+- [ ] One account type — role (Merchant / Traveler) remains a switchable setting post-login
+- [ ] "Claim your data" migration flow on registration — detects existing session token in localStorage and reassigns all carts, ratings, and stamps to the new user ID (opt-in, one-time)
+- [ ] Pre-demo cleanup script — SQL to wipe rows created by Playwright test session tokens
+
+> **Notes:** The schema is already designed for this — `operator_id` and `traveler_id` are string FKs that currently hold session tokens. Swapping in real user IDs requires no structural changes, only a data migration. The role selector becomes a profile setting post-login.
+
 ---
 
 ## Data Model

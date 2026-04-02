@@ -154,6 +154,7 @@ Tests use `addInitScript` to pre-seed `localStorage` before navigation (avoids r
 | 5 — Passport | ✅ Done | Stamps, badges, leaderboard |
 | 6 — Polish | ✅ Done | Fantasy fonts, mobile layout, loading/empty/error states |
 | 7 — Deploy | ⬜ Next | Railway (Go+PG) + Vercel (Next.js) |
+| 8 (see readme)
 
 ### Misthaven city districts
 `Midheath`, `Peridozys`, `Beerside`, `Westheath`, `Aspenlane`, `Oakcorner`
